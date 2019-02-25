@@ -63,8 +63,8 @@ void Display4() {
 	glColor3f(1, 0.1, 0.1); // rosu
 	// trasare linie poligonala GL_LINE_STRIP : (v0,v1), (v1,v2), (v_{n-2},v_{n-1})
 	glBegin(GL_LINE_STRIP);
-	glVertex2f(1, 1);
-	glVertex2f(1, 0.85);
+	glVertex2f(1.0, 1.0);
+	glVertex2f(1.0, 0.85);
 	glVertex2f(0.60, 0.60);
 	glVertex2f(0.60, 0.45);
 	glEnd();
@@ -74,8 +74,8 @@ void Display5() {
 	glColor3f(1, 0.1, 0.1); // rosu
 	// trasare linie poligonala inchisa GL_LINE_LOOP : (v0,v1), (v1,v2), (v_{n-1},v0)
 	glBegin(GL_LINE_LOOP);
-	glVertex2f(1, 1);
-	glVertex2f(1, 0.85);
+	glVertex2f(1.0, 1.0);
+	glVertex2f(1.0, 0.85);
 	glVertex2f(0.60, 0.60);
 	glVertex2f(0.60, 0.45);
 	glEnd();
@@ -86,13 +86,13 @@ void Display6() {
 	// trasare triunghiuri GL_TRIANGLES : (v0,v1,v2), (v3,v4,v5), ...
 	glBegin(GL_TRIANGLES);
 	// top right triangle
-	glVertex2f(1, 1);
-	glVertex2f(1, 0.85);
+	glVertex2f(1.0, 1.0);
+	glVertex2f(1.0, 0.85);
 	glVertex2f(0.85, 0.85);
 
 	//bottom left triangle
-	glVertex2f(-1, -1);
-	glVertex2f(-1, -0.85);
+	glVertex2f(-1.0, -1.0);
+	glVertex2f(-1.0, -0.85);
 	glVertex2f(-0.85, -0.85);
 	glEnd();
 }
@@ -100,8 +100,8 @@ void Display6() {
 void Display7() {
 	// trasare patrulatere GL_QUADS : (v0,v1,v2,v3), (v4,v5,v6,v7), ...
 	glBegin(GL_QUADS);
-	glVertex2f(1, 1);
-	glVertex2f(1, 0.55);
+	glVertex2f(1.0, 1.0);
+	glVertex2f(1.0, 0.55);
 	glVertex2f(0.55, 0.55);
 	glVertex2f(0.35, 0.75);
 	glEnd();
@@ -111,31 +111,30 @@ void Display8() {
 	// trasare poligon convex GL_QUADS : (v0,v1,v2, ..., v_{n-1})
 	glColor3f(0.2, 0.15, 0.88); // albastru
 	glBegin(GL_POLYGON);
-	glVertex2f(0.75, 0);
+	glVertex2f(0.75, 0.0);
 	glVertex2f(0.4, -0.6);
 	glVertex2f(-0.4, -0.6);
-	glVertex2f(-0.75, 0);
+	glVertex2f(-0.75, 0.0);
 	glVertex2f(-0.4, 0.6);
 	glVertex2f(0.4, 0.6);
 	glEnd();
-
 	
-	glColor3f(1, 1, 1); // ALB
+	glColor3f(1, 1, 1); // alb
 	glBegin(GL_POLYGON);
-	glVertex2f(0.55, 0);
+	glVertex2f(0.55, 0.0);
 	glVertex2f(0.3, -0.4);
 	glVertex2f(-0.3, -0.4);
-	glVertex2f(-0.55, 0);
+	glVertex2f(-0.55, 0.0);
 	glVertex2f(-0.3, 0.4);
 	glVertex2f(0.3, 0.4);
 	glEnd();
 
 	glColor3f(1, 0.1, 0.1); // rosu
 	glBegin(GL_LINE_LOOP);
-	glVertex2f(0.55, 0);
+	glVertex2f(0.55, 0.0);
 	glVertex2f(0.3, -0.4);
 	glVertex2f(-0.3, -0.4);
-	glVertex2f(-0.55, 0);
+	glVertex2f(-0.55, 0.0);
 	glVertex2f(-0.3, 0.4);
 	glVertex2f(0.3, 0.4);
 	glEnd();
