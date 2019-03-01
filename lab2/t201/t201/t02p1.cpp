@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -13,15 +12,20 @@ using namespace std;
 unsigned char prevKey;
 
 // functii ajutatoare
-void renderString(float x, float y, void* font, const char* string, float r, float g, float b){
+void renderMessage(float x, float y, const char* message){
+	// stabilim fontul
+	void* font = GLUT_BITMAP_HELVETICA_12;
+
 	// stabilim culoarea fontului
-	glColor3f(r, g, b);
+	glColor3f(0.0, 0.0, 0.0); // negru
 
 	// stabilim pozitia in fereastra de afisare
 	glRasterPos2f(x, y);
 
-	for (const char* c = string; *c != '\0'; ++c){
-		glutBitmapCharacter(font, *c);
+	int i = 0;
+	while (message[i] != '\0') {
+		glutBitmapCharacter(font, message[i]);
+		i++;
 	}
 }
 
@@ -180,13 +184,13 @@ void Display4() {
 	char message[50];
 
 	sprintf_s(message, "Melcul lui Pascal");
-	renderString(-0.9f, 0.8f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.9f, 0.8f, message);
 
 	sprintf_s(message, "a = %.1lf", a);
-	renderString(-0.9f, 0.7f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.9f, 0.7f, message);
 
 	sprintf_s(message, "b = %.1lf", b);
-	renderString(-0.9f, 0.6f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.9f, 0.6f, message);
 }
 
 /* trisectoarea lui Longchamps
@@ -246,10 +250,10 @@ void Display5() {
 	char message[50];
 
 	sprintf_s(message, "Trisectoarea lui Longchamps");
-	renderString(-0.8f, 0, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.8f, 0, message);
 
 	sprintf_s(message, "a = %.1lf", a);
-	renderString(-0.8f, -0.1f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.8f, -0.1f, message);
 }
 
 /* cicloida
@@ -286,13 +290,13 @@ void Display6() {
 	char message[50];
 
 	sprintf_s(message, "Cicloida");
-	renderString(-0.5f, -0.6f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.5f, -0.6f, message);
 
 	sprintf_s(message, "a = %.1lf", a);
-	renderString(-0.5f, -0.7f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.5f, -0.7f, message);
 
 	sprintf_s(message, "b = %.1lf", b);
-	renderString(-0.5f, -0.8f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.5f, -0.8f, message);
 }
 
 /* epicicloida
@@ -322,10 +326,10 @@ void Display7() {
 	char message[50];
 
 	sprintf_s(message, "Epicicloida");
-	renderString(0.2f, -0.8f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(0.2f, -0.8f, message);
 
 	sprintf_s(message, "R = %.1lf   r = %.1lf", R, r);
-	renderString(0.2f, -0.9f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(0.2f, -0.9f, message);
 }
 
 /* hipocicloida
@@ -355,13 +359,13 @@ void Display8() {
 	char message[50];
 
 	sprintf_s(message, "Hipocicloida");
-	renderString(0.2f, -0.5f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(0.2f, -0.5f, message);
 
 	sprintf_s(message, "R = %.1lf", R);
-	renderString(0.2f, -0.6f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(0.2f, -0.6f, message);
 
 	sprintf_s(message, "r = %.1lf", r);
-	renderString(0.2f, -0.7f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(0.2f, -0.7f, message);
 }
 
 /* lemniscata lui Bernoulli
@@ -404,10 +408,10 @@ void Display9() {
 	char message[50];
 
 	sprintf_s(message, "Lemniscata lui Bernoulli");
-	renderString(-0.6f, -0.6f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.6f, -0.6f, message);
 
 	sprintf_s(message, "a = %.1lf", a);
-	renderString(-0.6f, -0.7f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.6f, -0.7f, message);
 }
 
 /* spirala logaritmica
@@ -437,10 +441,10 @@ void Display10() {
 	char message[50];
 
 	sprintf_s(message, "Spirala logaritmica");
-	renderString(-0.7f, -0.4f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.7f, -0.4f, message);
 
 	sprintf_s(message, "a = %.2lf", a);
-	renderString(-0.7f, -0.5f, GLUT_BITMAP_HELVETICA_12, message, 0, 0, 0);
+	renderMessage(-0.7f, -0.5f, message);
 }
 
 void Init(void) {
