@@ -135,21 +135,19 @@ f(x) = {
 d(x) = distanta de la x la cel mai apropiat intreg
 */
 void Display3() {
-	double ratio = 0.001;
+	double ratio = 0.05;
 	double xmin = 0.0;
 	double xmax = 100.0;
 	double ymax = 1.0;
 	double distanceFromRight = 10.0;
-	double distanceFromTop = 0.1;
 	double y;
 
 	glColor3f(1.0, 0.1, 0.1); // culoare rosie
 	glBegin(GL_LINE_STRIP);
-	glVertex2f(xmin, 1 / (ymax - distanceFromTop));
 	for (double x = xmin + ratio; x <= xmax - distanceFromRight; x += ratio)
 	{
 		y = (d(x) / x);
-		glVertex2f(x / xmax, y / ymax);
+		glVertex2f(x / xmax, (y - ratio) / ymax);
 	}
 	glEnd();
 }
