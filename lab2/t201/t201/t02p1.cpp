@@ -8,10 +8,12 @@ using namespace std;
 
 // dimensiunea ferestrei in pixeli
 #define dim 300
+#define precision pow(10,-5)
 
 unsigned char prevKey;
 
 // functii ajutatoare
+// http://www.codersource.net/2011/01/27/displaying-text-opengl-tutorial-5/
 void renderMessage(float x, float y, const char* message){
 	// stabilim fontul
 	void* font = GLUT_BITMAP_HELVETICA_12;
@@ -27,6 +29,10 @@ void renderMessage(float x, float y, const char* message){
 		glutBitmapCharacter(font, message[i]);
 		i++;
 	}
+}
+
+bool equal(double first, double second) {
+	return abs(first - second) < precision;
 }
 
 // concoida lui Nicomede (concoida dreptei)
@@ -119,39 +125,45 @@ void Display2() {
 // https://brainly.ro/tema/1174971
 //d(x) = distanta de la x la cel mai apropiat intreg
 double d(double x) {
-	double distance;
-
-	if (x - floor(x) > 0.5) {
-		distance = ceil(x);
+	if (x - floor(x) >= 0.5) {
+		return abs(ceil(x) - x);
 	}
 	else {
-		distance = floor(x);
+		return abs(floor(x) - x);
 	}
-
-	return abs(distance - x);
 }
 
 /*
 f(x) = {
 		1, x == 0
-		d(x) / x, x > 0
+		d(x) / x, 0 < x <= 100
 		}
 d(x) = distanta de la x la cel mai apropiat intreg
 */
 void Display3() {
 	double ratio = 0.05;
-	double xmin = 0.0;
-	double xmax = 100.0;
-	double ymax = 1.0;
-	double distanceFromRight = 10.0;
+	double xmin = 0;
+	double xmax = 100;
+	double ymax = 1;
 	double y;
+
+	for (double x = xmin + ratio; x <= xmax; x += ratio)
+	{
+		y = (d(x) / x);
+		ymax = y > ymax ? y : ymax;
+	}
+
+	ymax *= 1.1;
 
 	glColor3f(1.0, 0.1, 0.1); // culoare rosie
 	glBegin(GL_LINE_STRIP);
-	for (double x = xmin + ratio; x <= xmax - distanceFromRight; x += ratio)
+
+	//primul punct
+	glVertex2f(0, 1 / ymax);
+	for (double x = xmin + ratio; x <= xmax; x += ratio)
 	{
 		y = (d(x) / x);
-		glVertex2f(x / xmax, (y - ratio) / ymax);
+		glVertex2f(x / 110, y / ymax);
 	}
 	glEnd();
 }
@@ -194,7 +206,8 @@ void Display4() {
 }
 
 /* trisectoarea lui Longchamps
-
+x = a / (4 * cos(t) * cos(t) - 3)
+y = (a * tan(t)) / (4 * cos(t) * cos(t) - 3)
 */
 void Display5() {
 	double ratio = 0.005;
@@ -208,7 +221,7 @@ void Display5() {
 	glBegin(GL_LINE_STRIP);
 	glColor3f(0.0, 0.0, 0.0); // negru
 	for (double t = tmin + ratio; t < tmax; t += ratio) {
-		if ((t != pi / 6) && (t != -pi / 6)) {
+		if (!equal(t, pi / 6) && !equal(t, -pi / 6)) {
 			x = a / (4 * cos(t) * cos(t) - 3);
 			y = (a * tan(t)) / (4 * cos(t) * cos(t) - 3);
 
@@ -448,13 +461,9 @@ void Display10() {
 }
 
 void Init(void) {
-
 	glClearColor(1.0, 1.0, 1.0, 1.0);
-
 	glLineWidth(1);
-
 	//   glPointSize(4);
-
 	glPolygonMode(GL_FRONT, GL_LINE);
 }
 
