@@ -355,6 +355,62 @@ public:
 };
 
 
+class CSierpinsky {
+public:
+	void sierpinsky(CPunct &p, double lungime, int nivel) {
+		if (nivel >= 0) {
+			double lungimeNoua = lungime / 3;
+
+			double x, y;
+			p.getxy(x, y);
+
+			CPunct t(x + lungimeNoua, y - lungimeNoua);
+			deseneazaPatrat(t, lungime / 3);
+
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (i == 1 && j == 1) {
+						continue;
+					} 
+					
+					CPunct p(x + i * lungimeNoua, y - j * lungimeNoua);
+					sierpinsky(p, lungime / 3, nivel - 1);
+				}
+			}
+		}
+	}
+
+	void deseneazaPatrat(CPunct &p, double lungime) {
+		CVector v(1.0, 0.0);
+
+		v.rotatie(0);
+		v.deseneaza(p, lungime);
+
+		p = v.getDest(p, lungime);
+		v.rotatie(-90);
+		v.deseneaza(p, lungime);
+
+		p = v.getDest(p, lungime);
+		v.rotatie(-90);
+		v.deseneaza(p, lungime);
+
+		p = v.getDest(p, lungime);
+		v.rotatie(-90);
+		v.deseneaza(p, lungime);
+
+		p = v.getDest(p, lungime);
+		v.rotatie(-90);
+	}
+
+	void afisare(double lungime, int nivel) {
+		CVector v(1.0, 0.0);
+		CPunct p(-0.5, 0.5);
+		
+		deseneazaPatrat(p, 1.0);
+		sierpinsky(p, lungime, nivel);
+	}
+};
+
 
 // afisare curba lui Koch "fulg de zapada"
 void Display1() {
@@ -501,6 +557,28 @@ void Display4() {
   nivel++;
 }
 
+// afisare covor Sierpinski
+void Display5() {
+	CSierpinsky cs;
+	cs.afisare(1.0, nivel);
+
+	char c[3];
+	sprintf(c, "%2d", nivel);
+	glRasterPos2d(-0.98, -0.98);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'N');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'i');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'v');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'e');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'l');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '=');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c[0]);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c[1]);
+
+	nivel++;
+}
+
+
+
 void Init(void) {
 
    glClearColor(1.0,1.0,1.0,1.0);
@@ -537,7 +615,11 @@ void Display(void)
       glClear(GL_COLOR_BUFFER_BIT);
       Display4();
       break;
-    default:
+	case '5':
+		glClear(GL_COLOR_BUFFER_BIT);
+		Display5();
+		break;
+	default:
       break;
   }
 
