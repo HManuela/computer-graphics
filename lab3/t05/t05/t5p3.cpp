@@ -472,6 +472,38 @@ public:
 	}
 };
 
+class CTriunghi
+{
+public:
+	void triunghi(double lungime, int nivel, CPunct p, CVector v, int d)
+	{
+		if (nivel == 0)
+		{
+			v.deseneaza(p, lungime);
+		}
+		else
+		{
+			v.rotatie(60 * d);
+			triunghi(lungime / 2, nivel - 1, p, v, -d);
+			
+			p = v.getDest(p, lungime / 2);
+			v.rotatie(-60 * d);
+			triunghi(lungime / 2, nivel - 1, p, v, d);
+			
+			p = v.getDest(p, lungime / 2);
+			v.rotatie(-60 * d);
+			triunghi(lungime / 2, nivel - 1, p, v, -d);
+			v.rotatie(60 * d);
+		}
+	}
+
+	void afisare(double lungime, int nivel)
+	{
+		CPunct p1(-0.75, -0.5);
+		CVector v(0.0, 1.0);
+		triunghi(lungime, nivel, p1, v, -1);
+	}
+};
 
 // afisare curba lui Koch "fulg de zapada"
 void Display1() {
@@ -658,7 +690,25 @@ void Display6() {
 	nivel++;
 }
 
+// afisare triunghi
+void Display7() {
+	CTriunghi ct;
+	ct.afisare(1.5, nivel);
 
+	char c[3];
+	sprintf(c, "%2d", nivel);
+	glRasterPos2d(-0.98, -0.98);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'N');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'i');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'v');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'e');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'l');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '=');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c[0]);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c[1]);
+
+	nivel++;
+}
 
 void Init(void) {
 
@@ -703,6 +753,10 @@ void Display(void)
 	case '6':
 		glClear(GL_COLOR_BUFFER_BIT);
 		Display6();
+		break;
+	case '7':
+		glClear(GL_COLOR_BUFFER_BIT);
+		Display7();
 		break;
 	default:
       break;
