@@ -411,6 +411,67 @@ public:
 	}
 };
 
+class CTree {
+public:
+	
+
+	void tree(CPunct p, CVector v, double lungime, int nivel) {
+		if (nivel > 0) {
+			CVector v2 = v;
+
+			v.rotatie(-45);
+			v.deseneaza(p, lungime);
+
+			CPunct p1 = v.getDest(p, lungime);
+
+			v.rotatie(90);
+			v.deseneaza(p, lungime);
+
+			CPunct dreapta = v.getDest(p, lungime);
+
+			v.rotatie(-45);
+			v.deseneaza(dreapta, lungime);
+
+			CPunct p2Parent = v.getDest(dreapta, lungime);
+
+			v.rotatie(60);
+			v.deseneaza(dreapta, lungime);
+
+			CPunct p4 = v.getDest(dreapta, lungime);
+
+			v.rotatie(-60);
+			v.rotatie(-90);
+			v.deseneaza(p2Parent, lungime / 2);
+			
+			CPunct p2 = v.getDest(p2Parent, lungime / 2);
+
+			v.rotatie(120);
+			v.deseneaza(p2Parent, lungime / 2);
+
+			CPunct p3 = v.getDest(p2Parent, lungime / 2);
+
+			v2.rotatie(-45);
+			tree(p1, v2, lungime / 3, nivel - 1);
+			v2.rotatie(-45);
+			tree(p2, v2, lungime / 3, nivel - 1);
+			tree(p3, v, lungime / 3, nivel - 1);
+			v.rotatie(15);
+			tree(p4, v, lungime / 3, nivel - 1);
+		}
+	}
+
+	void afisare(int nivel) {
+		CVector v(1.0, 0.0);
+		CPunct p(0, 0.75);
+
+		v.rotatie(-90);
+		v.deseneaza(p, 0.1);
+
+		CPunct x = v.getDest(p, 0.1);
+		tree(x, v, 0.4, nivel);
+	}
+};
+
 
 // afisare curba lui Koch "fulg de zapada"
 void Display1() {
@@ -577,6 +638,26 @@ void Display5() {
 	nivel++;
 }
 
+// afisare arbore intors
+void Display6() {
+	CTree ct;
+	ct.afisare(nivel);
+
+	char c[3];
+	sprintf(c, "%2d", nivel);
+	glRasterPos2d(-0.98, -0.98);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'N');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'i');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'v');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'e');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, 'l');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, '=');
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c[0]);
+	glutBitmapCharacter(GLUT_BITMAP_9_BY_15, c[1]);
+
+	nivel++;
+}
+
 
 
 void Init(void) {
@@ -618,6 +699,10 @@ void Display(void)
 	case '5':
 		glClear(GL_COLOR_BUFFER_BIT);
 		Display5();
+		break;
+	case '6':
+		glClear(GL_COLOR_BUFFER_BIT);
+		Display6();
 		break;
 	default:
       break;
