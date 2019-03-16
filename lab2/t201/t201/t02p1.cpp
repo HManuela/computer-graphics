@@ -122,7 +122,6 @@ void Display2() {
 }
 
 
-// https://brainly.ro/tema/1174971
 //d(x) = distanta de la x la cel mai apropiat intreg
 double d(double x) {
 	if (x - floor(x) >= 0.5) {
@@ -147,6 +146,7 @@ void Display3() {
 	double ymax = 1;
 	double y;
 
+	// compute ymax
 	for (double x = xmin + ratio; x <= xmax; x += ratio)
 	{
 		y = (d(x) / x);
@@ -160,6 +160,7 @@ void Display3() {
 
 	//primul punct
 	glVertex2f(0, 1 / ymax);
+
 	for (double x = xmin + ratio; x <= xmax; x += ratio)
 	{
 		y = (d(x) / x);
@@ -217,9 +218,48 @@ void Display5() {
 	double tmax = -pi / 5.35;
 	double x, y;
 	int count = 1;
+	double leftCornerX;
 
-	glBegin(GL_LINE_STRIP);
-	glColor3f(0.0, 0.0, 0.0); // negru
+	// parcurg pentru a afla x
+	for (double t = tmin + ratio; t < tmax; t += ratio) {
+		if (!equal(t, pi / 6) && !equal(t, -pi / 6)) {
+			x = a / (4 * cos(t) * cos(t) - 3);
+			y = (a * tan(t)) / (4 * cos(t) * cos(t) - 3);
+		}
+	}
+
+	// am ajuns cu x in colt stanga sus
+	// desenare triunghiuri interioare
+	glBegin(GL_TRIANGLE_FAN);
+	leftCornerX = x;
+	glColor3f(1.0, 1.0, 1.0); // alb
+	glVertex2f(leftCornerX, 1.0);
+
+	// desenare triunghiuri
+	for (double t = tmin + ratio; t < tmax; t += ratio) {
+		if (!equal(t, pi / 6) && !equal(t, -pi / 6)) {
+			x = a / (4 * cos(t) * cos(t) - 3);
+			y = (a * tan(t)) / (4 * cos(t) * cos(t) - 3);
+			// pentru a sari peste partea alba din centru
+			if (y < 0.25) {
+				continue;
+			}
+			if (count % 3 == 0) {
+				glColor3f(1.0, 0.1, 0.1); // rosu
+				glVertex2f(x, y);
+			}
+			else {
+				glColor3f(1.0, 1.0, 1.0); // alb
+				glVertex2f(x, y);
+			}
+			++count;
+		}
+	}
+	glEnd();
+
+	glBegin(GL_LINE_LOOP);
+	glColor3f(0.0, 0.0, 1.0); // albastru
+	glVertex2f(leftCornerX, 1.0);
 	for (double t = tmin + ratio; t < tmax; t += ratio) {
 		if (!equal(t, pi / 6) && !equal(t, -pi / 6)) {
 			x = a / (4 * cos(t) * cos(t) - 3);
@@ -227,36 +267,6 @@ void Display5() {
 
 			glVertex2f(x, y);
 		}
-	}
-	glEnd();
-
-	// desenare contur stanga
-	glBegin(GL_LINE_STRIP);
-	glColor3f(0.0, 0.0, 0.0); // negru
-	for (double start = y; start <= 1.0; start += ratio) {
-		y = start;
-		glVertex2f(x, y);
-	}
-	glEnd();
-
-	// am ajuns cu x, y in colt stanga sus
-	// desenare triunghiuri interioare
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(x, y);
-
-	for (double t = tmin + ratio; t < tmax; t += ratio) {
-		x = a / (4 * cos(t) * cos(t) - 3);
-		y = (a * tan(t)) / (4 * cos(t) * cos(t) - 3);
-
-		if (count % 3 == 0) {
-			glColor3f(1.0, 0.1, 0.1); // rosu
-			glVertex2f(x, y);
-		}
-		else {
-			glColor3f(1.0, 1.0, 1.0); // alb
-			glVertex2f(x, y);
-		}
-		++count;
 	}
 	glEnd();
 
@@ -435,14 +445,14 @@ void Display10() {
 	double ratio = 0.001;
 	double a = 0.02;
 	double pi = 4 * atan(1.0);
-	double tmin = ratio;
+	double tmin = 0.0;
 	double tmax = pi;
 	double r, x, y;
 	double distanceFromLeft = 0.3;
 
 	glColor3f(1.0, 0.1, 0.1); // rosu
 	glBegin(GL_LINE_STRIP);
-	for (double t = tmin; t < tmax; t += ratio) {
+	for (double t = tmin + ratio; t < tmax; t += ratio) {
 		r = a * exp(1 + t);
 		x = r * cos(t);
 		y = r * sin(t);
