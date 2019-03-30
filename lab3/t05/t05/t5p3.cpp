@@ -310,7 +310,6 @@ public:
 };
 
 
-
 class CCurbaHilbert
 {
 public:
@@ -451,12 +450,12 @@ public:
 			CPunct p3 = v.getDest(p2Parent, lungime / 2);
 
 			v2.rotatie(-45);
-			tree(p1, v2, lungime / 3, nivel - 1);
+			tree(p1, v2, lungime / 2.5, nivel - 1);
 			v2.rotatie(-45);
-			tree(p2, v2, lungime / 3, nivel - 1);
-			tree(p3, v, lungime / 3, nivel - 1);
+			tree(p2, v2, lungime / 2.5, nivel - 1);
+			tree(p3, v, lungime / 2.5, nivel - 1);
 			v.rotatie(15);
-			tree(p4, v, lungime / 3, nivel - 1);
+			tree(p4, v, lungime / 2.5, nivel - 1);
 		}
 	}
 
@@ -472,6 +471,11 @@ public:
 	}
 };
 
+/*
+Grafica pe calculator in limbajele C si pascal
+Autori: M. Vlada, I. Nistor, A. Posea, C. Constantinescu
+Cap. 6: Aplicatii in geometria "Turtle"
+*/
 class CTriunghi
 {
 public:

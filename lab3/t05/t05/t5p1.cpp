@@ -136,6 +136,11 @@ public:
     return rez;
   }
 
+  /*
+	glLoadIdentity loads the identity matrix: a matrix that returns the exact same coordinates it was applied to. 
+	It could be seen as a "reset" of the current matrix. 
+	Calling it multiple times won't have any effect (unless you do something to the current matrix in between).
+  */
   // afisarea multimii J-F care intersecteaza multimea argument
   void display(double xmin, double ymin, double xmax, double ymax)
   {
@@ -183,24 +188,40 @@ private:
 };
 
 
+/*
+The glTranslated function multiplies the current matrix by a translation matrix.
+The glTranslated function produces the translation specified by (x, y, z). 
+The translation vector is used to compute a 4x4 translation upper triunghiular matrix.
+
+ Use glPushMatrix to save and restore the untranslated coordinate system.
+
+ The glScaled and glScalef functions multiply the current matrix by a general scaling matrix.
+ The glScaled function produces a general scaling along the x, y, and z axes. 
+ The three arguments indicate the desired scale factors along each of the three axes. 
+ The resulting matrix is a 4x4 matrix with x,y,z,1 on main diagonal and 0 for the rest.
+
+ glScale produces a nonuniform scaling along the x, y, and z axes.
+The three parameters indicate the desired scale factor along each of the three axes.
+If scale factors other than 1 are applied to the modelview matrix and lighting is enabled, lighting often appears wrong.
+In that case, enable automatic normalization of normals by calling glEnable with the argument GL_NORMALIZE.
+*/
+
 class CMandelbrot {
 public:
 	CMandelbrot(int iterations) {
 		this->iterations = iterations;
 	}
-
+	
 	void display(double xmin, double ymin, double xmax, double ymax) {
 		glBegin(GL_POINTS);
-
 		for (double x = xmin; x <= xmax; x += RX_MD) {
 			for (double y = ymin; y <= ymax; y += RY_MD) {
 				CComplex c(x, y);
 				if (isIn(c)) {
-					glVertex2d(x, y);
+					glVertex2d(x / 2, y / 2);
 				}
 			}
 		}
-
 		glEnd();
 	}
 
@@ -213,7 +234,7 @@ public:
 
 			if (z1.getModul() > 2.0) {
 				glColor3f(0.1 * i, 0.1 * i, 0.1 * i);
-				glVertex2d(c.getRe(), c.getIm());
+				glVertex2d(c.getRe()/ 2, c.getIm() / 2);
 				glColor3f(1.0, 0.1, 0.1);
 				return false;
 			}
@@ -252,7 +273,7 @@ void Display3() {
 	CMandelbrot m(50);
 	
 	glColor3f(1.0, 0.1, 0.1);
-	m.display(-1, -1, 1, 1);
+	m.display(-2, -2, 2, 2);
 }
 
 
