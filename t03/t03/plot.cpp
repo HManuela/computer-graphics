@@ -18,8 +18,8 @@ public:
 		int height = glutGet(GLUT_WINDOW_HEIGHT);
 		
 		int length = fminl(width, height);
-		double cellHeight = 1.9 / n * (1.0 * length / height);
-		double cellWidth = 1.9 / n * (1.0 * length / width);
+		cellHeight = 1.9 / n * (1.0 * length / height);
+		cellWidth = 1.9 / n * (1.0 * length / width);
 
 		for (int i = 0; i <= n; ++i) {
 			drawLine(-0.95 + (i * cellHeight), -0.95, -0.95 + n * cellWidth);
@@ -32,9 +32,28 @@ public:
 	}
 
 	void writePixel(int line, int column) {
-		// TODO: implement
+		double x = -0.95 + column * cellWidth;
+		double y = -0.95 + line * cellHeight;
+		drawCircle(x, y);
 	}
 private:
+
+	// Resources: https://gist.github.com/linusthe3rd/803118
+	void drawCircle(double x, double y) {
+		double PI = 3.14159265358979323846;
+
+		glBegin(GL_TRIANGLE_FAN);
+		glColor3d(0.0, 0.0, 0.0);
+		glVertex2f(x, y); // center of circle
+		int numberOfTrianglesToDraw = 200;
+		for (int i = 0; i <= numberOfTrianglesToDraw; i++) {
+			double vx = x + (cellWidth / 3 * cos(i * 2 * PI / numberOfTrianglesToDraw));
+			double vy = y + (cellHeight / 3 * sin(i * 2 * PI / numberOfTrianglesToDraw));
+			glVertex2f(vx, vy);
+		}
+		glEnd();
+	}
+
 	void drawLine(double y, double min, double max) {
 		glColor3d(0.0, 0.0, 0.0);
 		glBegin(GL_LINES);
@@ -52,6 +71,9 @@ private:
 	}
 
 	int n;
+
+	double cellHeight;
+	double cellWidth;
 };
 
 GrilaCarteziana grid(15);
@@ -73,6 +95,9 @@ void Display1()
 
 void DisplayGrid() {
 	grid.draw();
+	grid.writePixel(2, 2);
+	grid.writePixel(3, 3);
+	grid.writePixel(4, 7);
 }
 
 void Init(void) {
