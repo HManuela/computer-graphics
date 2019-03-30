@@ -1,11 +1,22 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
+#include <vector>
 #include "glut.h"
+
+using namespace std;
+
 // dimensiunea ferestrei in pixeli
 #define dim 300
 
 unsigned char prevKey;
+struct Point {
+	int x, y;
+	Point(int x, int y) {
+		this->x = x;
+		this->y = y;
+	}
+};
 
 class GrilaCarteziana {
 public:
@@ -31,12 +42,97 @@ public:
 		}
 	}
 
-	void writePixel(int line, int column) {
-		double x = -0.95 + column * cellWidth;
-		double y = -0.95 + line * cellHeight;
-		drawCircle(x, y);
+	void writePixel(int x, int y) {
+		double vx = -0.95 + x * cellWidth;
+		double vy = -0.95 + y * cellHeight;
+		drawCircle(vx, vy);
 	}
+
+	void displaySegment3(double x0, double y0, double xn, double yn) {
+		double vx0 = -0.95 + (x0 * cellWidth);
+		double vy0 = -0.95 + (y0 * cellHeight);
+		double vxn = -0.95 + (xn * cellWidth);
+		double vyn = -0.95 + (yn * cellHeight);
+		displayRightSegment(vx0, vy0, vxn, vyn);
+
+		if (case1(x0, y0, xn, yn)) {
+			drawLineSegmentHigh(x0, y0, xn, yn);
+		}
+		else {
+			drawLineSegmentLow(x0, y0, xn, yn);
+		}
+	}
+	void displayRightSegment(double x0, double y0, double xn, double yn) {
+		glColor3d(0.9, 0, 0);
+		glLineWidth(3);
+		glBegin(GL_LINES);
+		glVertex2d(x0, y0);
+		glVertex2d(xn, yn);
+		glEnd();
+
+		glLineWidth(1);
+	}
+
 private:
+	bool case1(double x0, double y0, double xn, double yn) {
+		double m = (yn - y0) / (xn - x0);
+		return x0 < xn && y0 < yn && (abs(m) <= 1);
+	}
+
+	// Resources: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Algorithm_for_integer_arithmetic
+	void drawLineSegmentLow(int x0, int y0, int xn, int yn) {
+		int dx = xn - x0;
+		int dy = yn - y0;
+
+		int yi = 1;
+		if (dy < 0) {
+			yi = -1;
+			dy = -dy;
+		}
+
+		int d = 2 * dy - dx;
+		int dE = 2 * dy;
+		int dSE = 2 * dx;
+		int x = x0, y = y0;
+
+		while (x <= xn) {
+			writePixel(x, y);
+			writePixel(x, y - 1);
+			writePixel(x, y + 1);
+
+			if (d > 0) {
+				d -= dSE;
+				y = y + yi;
+			}
+		
+			++x;
+			d += dE;
+		}
+	}
+
+	void drawLineSegmentHigh(int x0, int y0, int xn, int yn) {
+		int dx = xn - x0;
+		int dy = yn - y0;
+
+		int d = 2 * dy - dx;
+		int dE = 2 * dy;
+		int dNE = 2 * (dy - dx);
+		int x = x0, y = y0;
+
+		while (x <= xn) {
+			writePixel(x, y);
+
+			if (d <= 0) {
+				d += dE;
+				++x;
+			}
+			else {
+				d += dNE;
+				++x;
+				++y;
+			}
+		}
+	}
 
 	// Resources: https://gist.github.com/linusthe3rd/803118
 	void drawCircle(double x, double y) {
@@ -78,26 +174,10 @@ private:
 
 GrilaCarteziana grid(15);
 
-void Display1()
-{
-	double ymin = 0.0;
-	double ymax = 0.9;
-	double xmin = 0.0;
-	double xmax = 0.9;
-	double step = 0.06;
-
-	glColor3f(0.0, 0.0, 0.0); // negru
-	glBegin(GL_LINES);
-		glVertex2i(0, 0); 
-		glVertex2i(1, 1);
-	glEnd();
-}
-
-void DisplayGrid() {
+void Display1() {
 	grid.draw();
-	grid.writePixel(2, 2);
-	grid.writePixel(3, 3);
-	grid.writePixel(4, 7);
+	grid.displaySegment3(0, 0, 15, 7);
+	grid.displaySegment3(0, 15, 15, 10);
 }
 
 void Init(void) {
@@ -114,8 +194,6 @@ void Display(void) {
 	case '1':
 		Display1();
 		break;
-	case '2':
-		DisplayGrid();
 	default:
 		break;
 	}
