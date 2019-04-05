@@ -38,7 +38,6 @@ public:
 
 		for (int j = 0; j <= n; ++j) {
 			drawColumn(-0.95 + (j * cellWidth), -0.95, -0.95 + n * cellHeight);
-
 		}
 	}
 
@@ -53,7 +52,7 @@ public:
 		double vy0 = -0.95 + (y0 * cellHeight);
 		double vxn = -0.95 + (xn * cellWidth);
 		double vyn = -0.95 + (yn * cellHeight);
-		displayRightSegment(vx0, vy0, vxn, vyn);
+		drawSegment(vx0, vy0, vxn, vyn);
 
 		if (case1(x0, y0, xn, yn)) {
 			drawLineSegmentHigh(x0, y0, xn, yn);
@@ -62,7 +61,7 @@ public:
 			drawLineSegmentLow(x0, y0, xn, yn);
 		}
 	}
-	void displayRightSegment(double x0, double y0, double xn, double yn) {
+	void drawSegment(double x0, double y0, double xn, double yn) {
 		glColor3d(0.9, 0, 0);
 		glLineWidth(3);
 		glBegin(GL_LINES);
@@ -77,6 +76,11 @@ private:
 	bool case1(double x0, double y0, double xn, double yn) {
 		double m = (yn - y0) / (xn - x0);
 		return x0 < xn && y0 < yn && (abs(m) <= 1);
+	}
+
+	bool case2(double x0, double y0, double xn, double yn) {
+		double m = (yn - y0) / (xn - x0);
+		return x0 < xn && y0 > yn && (abs(m) <= 1);
 	}
 
 	// Resources: https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Algorithm_for_integer_arithmetic
@@ -172,11 +176,12 @@ private:
 	double cellWidth;
 };
 
-GrilaCarteziana grid(15);
+GrilaCarteziana grid(25);
 
 void Display1() {
 	grid.draw();
 	grid.displaySegment3(0, 0, 15, 7);
+	//grid.displaySegment3(10, 8, 0, 0);
 	grid.displaySegment3(0, 15, 15, 10);
 }
 
