@@ -49,46 +49,115 @@ public:
 		drawDisk(vx, vy);
 	}
 
-	void displayCircle(int R) {
-		drawCircleLine(R, 90);
+	void displayCircle(int x0, int y0, int R) {
+		drawCircleLine(x0, y0, R);
 		displayCircle4(R);
 	}
 
-	// https://cboard.cprogramming.com/c-programming/57934-drawing-circle-using-glut.html
-	void drawCircleLine(int R, int max) {
+	void displayFullCircle(int x0, int y0, int R) {
+		drawFullCircleLine(x0, y0, R);
+		displayFullCircle4(x0, y0, R);
+	}
+
+	void drawCircleLine(int x0, int y0, int R) {
 		double x, y;
+		double step = 0.001;
 
 		glColor3d(0.9, 0.0, 0.0);
-		glLineWidth(5);
-		glBegin(GL_LINES);
+		glPointSize(4);
+		glBegin(GL_POINTS);
 
-		x = R * cos(360 * PI / 180.0);
-		y = R * sin(360 * PI / 180.0);
-
-		double vx = -0.95 + x * cellWidth;
-		double vy = -0.95 + y * cellHeight;
-
-		for (int i = 0; i < max; i++)
+		// cadran 1: 0 <= t <= PI/2
+		for (double t = 0; t <= PI / 2; t += step)
 		{
-			glVertex2f(vx, vy);
-			x = R * cos(i * PI / 180.0);
-			y = R * sin(i * PI / 180.0);
+			x = x0 + R * cos(t);
+			y = y0 + R * sin(t);
 
-			vx = -0.95 + x * cellWidth;
-			vy = -0.95 + y * cellHeight;
+			double vx = -0.95 + x * cellWidth;
+			double vy = -0.95 + y * cellHeight;
 			glVertex2f(vx, vy);
 		}
+
+		glEnd();
+		// reset point size
+		glPointSize(1);
+	}
+
+	void drawFullCircleLine(int x0, int y0, int R) {
+		double x, y;
+		double step = 0.001;
+
+		glColor3d(0.9, 0.0, 0.0);
+		glPointSize(4);
+		glBegin(GL_POINTS);
+
+		// cadran 1: 0 <= t <= PI/2
+		for (double t = 0; t <= 2 * PI; t += step)
+		{
+			x = x0 + R * cos(t);
+			y = y0 + R * sin(t);
+
+			double vx = -0.95 + x * cellWidth;
+			double vy = -0.95 + y * cellHeight;
+			glVertex2f(vx, vy);
+		}
+
+		glEnd();
+		// reset point size
+		glPointSize(1);
+	}
+
+	void displayEllipse(int x0, int y0, int a, int b) {
+		drawEllipseLine(x0, y0, a, b);
+		fillTheEllipse(x0, y0, a, b);
+	}
+
+	void drawEllipseLine(int x0, int y0, int a, int b) {
+		double x, y;
+		double step = 0.001;
+
+		glColor3d(0.9, 0.0, 0.0);
+		glPointSize(2);
+		glBegin(GL_POINTS);
+
+		for (double t = 0; t < 2 * PI; t += step) {
+			x = x0 + a * cos(t);
+			y = y0 + b * sin(t);
+
+			double vx = -0.95 + x * cellWidth;
+			double vy = -0.95 + y * cellHeight;
+			glVertex2f(vx, vy);
+		}
+
 		glEnd();
 
-		// reset line width
-		glLineWidth(1);
+		// reset point size
+		glPointSize(1);
 	}
 
 private:
-	void displayCirclePoints3(int x, int y) {
+	void displayCirclePoints3(int x, int y, int thickening) {
 		writePixel(y, x);
-		writePixel(y + 1, x);
-		writePixel(y - 1, x);
+
+		while (thickening > 0) {
+			writePixel(y + thickening, x);
+			writePixel(y - thickening, x);
+			--thickening;
+		}
+	}
+
+	void displayCircleFullPoints3(int x0, int y0, int x, int y) {
+		writePixel(x, y);
+		writePixel(x0 - (x - x0), y);
+		writePixel(x0 - (x - x0), y0 - (y - y0));
+		writePixel(x, y0 - (y - y0));
+
+		if (x != y) {
+			writePixel(y, x);
+			writePixel(y, x0 - (x - x0));
+			writePixel(y0 - (y - y0), x0 - (x - x0));
+			writePixel(y0 - (y - y0), x);
+		}
 	}
 
 	void displayCircle4(int R) {
@@ -98,7 +167,7 @@ private:
 
 		int dE = 3;
 		int dSE = -2 * R + 5;
-		displayCirclePoints3(x, y);
+		displayCirclePoints3(x, y, 1);
 
 		while (y > x) {
 			if (d < 0) {
@@ -113,7 +182,96 @@ private:
 				--y;
 			}
 			x++;
-			displayCirclePoints3(x, y);
+			displayCirclePoints3(x, y, 1);
+		}
+	}
+
+	void displayFullCircle4(int x0, int y0, int R) {
+		int x = x0;
+		int y = y0 + R;
+		int d = 1 - R;
+
+		int dE = 3;
+		int dSE = -2 * R + 5;
+		displayCircleFullPoints3(x0, y0, x, y);
+
+
+		while (y > x) {
+			if (d < 0) {
+				d += dE;
+				dE += 2;
+				dSE += 2;
+			}
+			else {
+				d += dSE;
+				dE += 2;
+				dSE += 4;
+				--y;
+			}
+			x++;
+			displayCircleFullPoints3(x0, y0, x, y);
+		}
+	}
+
+	void fillTheEllipse(int x0, int y0, int a, int b) {
+		int xi = 0, x = 0, y = b;
+		double fxpyp = 0.0;
+		double deltaE, deltaSE, deltaS;
+		vector<Point> ssm;
+
+		ssm.push_back(Point(x + x0, y + y0));
+		ssm.push_back(Point(xi + x0, y + y0));
+
+		// region 1
+		while (a * a * (y - 0.5) > b * b * (x + 1)) {
+			deltaE = b * b * (2 * x + 1);
+			deltaSE = b * b * (2 * x + 1) + a * a * (-2 * y + 1);
+			if (fxpyp + deltaE <= 0.0){
+				// E este in interior
+				fxpyp += deltaE;
+				x++;
+				ssm.push_back(Point(xi + x0, y + y0));
+				ssm.push_back(Point(x + x0, y + y0));
+			} else if (fxpyp + deltaSE <= 0.0)
+			{
+				// SE este in interior
+				fxpyp += deltaSE;
+				x++; y--;
+				ssm.push_back(Point(xi + x0, y + y0));
+				ssm.push_back(Point(x + x0, y + y0));
+			}
+		}
+
+		// region 2
+		while (y > 0){
+			deltaSE = b * b * (2 * x + 1) + a * a * (-2 * y + 1);
+			deltaS = a * a*(-2 * y + 1);
+			if (fxpyp + deltaSE <= 0.0)
+			{
+				// SE este in interior
+				fxpyp += deltaSE;
+				x++; y--;
+			} else
+			{
+				// S este in interior
+				fxpyp += deltaS;
+				y--;
+			}
+			ssm.push_back(Point(xi + x0, y + y0));
+			ssm.push_back(Point(x + x0, y + y0));
+		}
+
+		for (int i = 0; i < ssm.size(); i += 2) {
+			int xmin = ssm[i].x;
+			int xmax = ssm[i + 1].x;
+			int y = ssm[i].y;
+
+			for (int x = xmin; x <= xmax; x++) {
+				writePixel(x, y);
+				writePixel(x0 - (x - xmin), y);
+				writePixel(x, y0 -(y - y0));
+				writePixel(x0 - (x - xmin), y0 -(y - y0));
+			}
 		}
 	}
 
@@ -159,16 +317,24 @@ void Display1() {
 	GrilaCarteziana grid(15);
 
 	grid.draw();
-	grid.displayCircle(13);
+	grid.displayCircle(0, 0, 13);
 }
 
 void Display2() {
-	GrilaCarteziana grid(26);
+	GrilaCarteziana grid(30);
 
 	grid.draw();
+	grid.displayFullCircle(15, 15, 10);
 }
 
 void Display3() {
+	GrilaCarteziana grid(26);
+
+	grid.draw();
+	grid.displayEllipse(13, 7, 13, 7);
+}
+
+void Display4() {
 	GrilaCarteziana grid(14);
 
 	grid.draw();
@@ -191,6 +357,9 @@ void Display(void) {
 		break;
 	case '3':
 		Display3();
+		break;
+	case '4':
+		Display4();
 		break;
 	default:
 		break;
