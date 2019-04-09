@@ -2,6 +2,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <vector>
+#include <algorithm>
+#include <fstream>
 #include "glut.h"
 
 using namespace std;
@@ -14,10 +16,65 @@ unsigned char prevKey;
 
 struct Point {
 	int x, y;
+
+	Point() {
+
+	}
+
 	Point(int x, int y) {
 		this->x = x;
 		this->y = y;
 	}
+};
+
+struct Edge {
+	Point start, end;
+
+	Edge() {
+
+	}
+
+	Edge(Point start, Point end) {
+		this->start = start;
+		this->end = end;
+	}
+};
+
+struct Polygon {
+	vector<Edge> edges;
+
+	Polygon(vector<Edge> edges) {
+		this->edges = edges;
+	}
+};
+
+struct Intersection {
+	double ymax;
+	double xmin;
+	double ratio;
+
+	Intersection(double ymax, double xmin, double ratio) {
+		this->ymax = ymax;
+		this->xmin = xmin;
+		this->ratio = ratio;
+	}
+};
+
+struct DOM_SCAN {
+	int n;
+	vector<int> values;
+
+	DOM_SCAN(int n) {
+		this->n = n;
+		for (int i = 0; i <= n; i++) {
+			values[i] = i;
+		}
+	}
+};
+
+// edge table
+struct ET {
+	vector<vector<Intersection>*> et;
 };
 
 class GrilaCarteziana {
@@ -126,13 +183,58 @@ public:
 
 			double vx = -0.95 + x * cellWidth;
 			double vy = -0.95 + y * cellHeight;
-			glVertex2f(vx, vy);
+			glVertex2d(vx, vy);
 		}
 
 		glEnd();
 
 		// reset point size
 		glPointSize(1);
+	}
+
+	void displayPolygon(string filename) {
+		drawPolygonLine(filename);
+	}
+
+	void drawPolygonLine(string filename) {
+		vector<Point> points = readPolygonCoordinates(filename);
+
+		glColor3d(0.9, 0.0, 0.0);
+		glLineWidth(3);
+		glBegin(GL_LINE_LOOP);
+
+		for (int i = 0; i < points.size(); i++) {
+			double vx = -0.95 + points[i].x * cellWidth;
+			double vy = -0.95 + points[i].y * cellHeight;
+			glVertex2d(vx, vy);
+		}
+
+		glEnd();
+
+		//reset line width
+		glLineWidth(1);
+	}
+
+	vector<Point> readPolygonCoordinates(string filename) {
+		ifstream inputFileStream;
+		inputFileStream.open(filename, ifstream::in);
+		
+		vector<Point> points;
+		int x, y;
+
+		int count = inputFileStream.get();
+		while (count > 0) {
+			inputFileStream >> x;
+			inputFileStream >> y;
+
+			Point point(x, y);
+			points.push_back(point);
+
+			--count;
+		}
+		inputFileStream.close();
+
+		return points;
 	}
 
 private:
@@ -142,6 +244,26 @@ private:
 		while (thickening > 0) {
 			writePixel(y + thickening, x);
 			writePixel(y - thickening, x);
+			--thickening;
+		}
+	}
+
+	void displayCirclePointLeftRight(int x, int y, int thickening) {
+		writePixel(x, y);
+
+		while (thickening > 0) {
+			writePixel(x + thickening, y);
+			writePixel(x - thickening, y);
+			--thickening;
+		}
+	}
+
+	void displayCirclePointUpDown(int x, int y, int thickening) {
+		writePixel(x, y);
+
+		while (thickening > 0) {
+			writePixel(x, y + thickening);
+			writePixel(x, y - thickening);
 			--thickening;
 		}
 	}
@@ -194,7 +316,6 @@ private:
 		int dE = 3;
 		int dSE = -2 * R + 5;
 		displayCircleFullPoints3(x0, y0, x, y);
-
 
 		while (y > x) {
 			if (d < 0) {
@@ -275,6 +396,42 @@ private:
 		}
 	}
 
+	void initializeEdgeTable(Polygon p, ET et) {
+		int xm, ym, xM, yM;
+		bool change;
+		DOM_SCAN DOM_SCAN(100);
+
+		for (int i = 0; i < DOM_SCAN.values.size(); i++) {
+			et.et[i]->at[i] = vector<Intersection>();
+		}
+
+		for (int i = 0; i < p.edges.size(); i++) {
+			Edge m(p.edges[i]);
+
+			if (m.start.y != m.end.y) {
+				ym = min(m.start.y, m.end.y);
+				yM = max(m.start.y, m.end.y);
+				xm = (ym == m.start.y) ? m.start.x : m.end.x;
+				xM = (yM == m.start.y) ? m.start.x : m.end.x;
+
+				double ratio = (xm - xM) / (ym - yM);
+				et.et.at(ym)->push_back(Intersection(yM, xm, ratio));
+			}
+		}
+		/*
+			sortarea in ordine crescatoare conform cu
+			xm a intersectiilor dreptei de scanare cu
+			muchiile poligonului
+		*/
+
+		for (int i = 0; i < DOM_SCAN.values.size(); i++) {
+			do {
+				change = false;
+				// ceata
+			} while (change);
+		}
+	}
+
 	// Resources: https://gist.github.com/linusthe3rd/803118
 	void drawDisk(double x, double y) {
 		glBegin(GL_TRIANGLE_FAN);
@@ -312,7 +469,6 @@ private:
 };
 
 
-
 void Display1() {
 	GrilaCarteziana grid(15);
 
@@ -338,6 +494,7 @@ void Display4() {
 	GrilaCarteziana grid(14);
 
 	grid.draw();
+	grid.displayPolygon("poligon.txt");
 }
 
 void Init(void) {
